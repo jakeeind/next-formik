@@ -1,8 +1,18 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import { useState, useEffect } from "react";
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import { Formik, Field, ErrorMessage, Form } from "formik";
+import * as Yup from "yup";
+import * as _ from "lodash";
 
 export default function Home() {
+  const loginSchema = Yup.object().shape({
+    email: Yup.string().email().required("Email is required"),
+    password: Yup.string()
+      .required("Password is required")
+      .min(3, "Your password too short"),
+  });
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,58 +22,81 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
+        <div className="w-full max-w-sm mx-auto mt-32">
+          <h1 className="text-3xl font-bold text-sky-400/100 mb-5 text-center">
+            Sign in!
+          </h1>
+          <Formik
+            initialValues={{
+              email: "",
+              password: "",
+            }}
+            onSubmit={(values) => {
+              console.log(values);
+            }}
+            validationSchema={loginSchema}
           >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            {({ errors, touched }) => (
+              <Form className="flex flex-initial flex-col justify-center">
+                <div className="md:flex flex-col mb-6">
+                  <label
+                    className="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
+                    htmlFor="email"
+                  >
+                    Email
+                  </label>
+                  <Field
+                    id="email"
+                    name="email"
+                    type="email"
+                    className={`bg-gray-200 appearance-none border-2 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-sky-300 ${
+                      errors.email && touched.email
+                        ? "border-red-400"
+                        : "border-gray-200"
+                    }`}
+                  />
+                  <ErrorMessage
+                    component={"a"}
+                    name="email"
+                    className="text-red-600 p-2 bg-red-100 my-3 rounded-md"
+                  />
+                </div>
+                <div className="md:flex flex-col mb-6">
+                  <label
+                    className="block text-gray-500 font-bold mb-1 md:mb-0 pr-4"
+                    htmlFor="password"
+                  >
+                    Password
+                  </label>
+                  <Field
+                    id="password"
+                    name="password"
+                    type="password"
+                    className={`bg-gray-200 appearance-none border-2 rounded w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-sky-300 ${
+                      errors.password && touched.password
+                        ? "border-red-400"
+                        : "border-gray-200"
+                    }`}
+                  />
+                  <ErrorMessage
+                    component={"a"}
+                    name="password"
+                    className="text-red-600 p-2 bg-red-100 my-3 rounded-md"
+                  />
+                </div>
+                <div className="flex justify-center">
+                  <button
+                    type="submit"
+                    className="p-3 border font-bold rounded-lg shadow bg-sky-500 hover:bg-sky-500/70 text-white w-full"
+                  >
+                    Sign in
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
-  )
+  );
 }
